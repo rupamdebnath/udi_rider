@@ -1,6 +1,6 @@
 # udi_rider
 
-A new Flutter application for udibaba drivers
+A new application for udibaba drivers
 
 ## Getting Started
 
