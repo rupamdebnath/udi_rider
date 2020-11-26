@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1054159565262",
+    "firebase_url": "https://udi-rider.firebaseio.com",
+    "project_id": "udi-rider",
+    "storage_bucket": "udi-rider.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054159565262:android:cb37a51012b512622ebb9f",
+        "android_client_info": {
+          "package_name": "com.swiftcreators.udirider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054159565262-od6dr463lha4r2uevlhccvnmse4ta2dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv3YCNK_OEp2OiMLe8xxr5RrvK-GlZ1JY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054159565262-od6dr463lha4r2uevlhccvnmse4ta2dh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
