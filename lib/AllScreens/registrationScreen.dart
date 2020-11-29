@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:udi_rider/AllScreens/mainscreen.dart';
 import 'package:udi_rider/main.dart';
+import 'package:udi_rider/AllWidgets/progressDialog.dart';
 
 import 'loginScreen.dart';
 
-
+// ignore: must_be_immutable
 class RegistrationScreen extends StatelessWidget {
   static const String idScreen = "register";
 
@@ -174,11 +175,22 @@ class RegistrationScreen extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void registerNewUser(BuildContext context) async
   {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context)
+        {
+          return ProgressDialog(message: "Authenticating, please wait...",);
+        }
+
+    );
+
       final User firebaseUser = (await _firebaseAuth
       .createUserWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text
       ).catchError((errMsg){
+        Navigator.pop(context);
         displayToastMessage("Error: " + errMsg.toString(), context);
       })).user;
 
@@ -191,13 +203,14 @@ class RegistrationScreen extends StatelessWidget {
           };
 
             usersRef.child(firebaseUser.uid).set(userDataMap);
-            displayToastMessage("congratulations, your account has been successfully created", context);
+            displayToastMessage("Congratulations, your account has been successfully created", context);
             //save user info to database
         
             Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
         }
       else
         {
+          Navigator.pop(context);
           displayToastMessage("New user account has not been created", context);
           //error occured - display error
         }

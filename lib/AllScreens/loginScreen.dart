@@ -3,9 +3,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:udi_rider/AllScreens/mainscreen.dart';
 import 'package:udi_rider/AllScreens/registrationScreen.dart';
+import 'package:udi_rider/AllWidgets/progressDialog.dart';
 import 'package:udi_rider/main.dart';
 
 
+// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
   static const String idScreen = "login";
   TextEditingController emailTextEditingController = TextEditingController();
@@ -129,11 +131,22 @@ class LoginScreen extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void loginAndAuthenticateUser(BuildContext context) async
   {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context)
+        {
+          return ProgressDialog(message: "Authenticating, please wait...",);
+        }
+
+    );
+
     final User firebaseUser = (await _firebaseAuth
         .signInWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text
     ).catchError((errMsg) {
+      Navigator.pop(context);
       displayToastMessage("Error: " + errMsg.toString(), context);
     })).user;
 
@@ -146,6 +159,7 @@ class LoginScreen extends StatelessWidget {
               displayToastMessage("You are logged in", context);
             }
             else {
+              Navigator.pop(context);
               _firebaseAuth.signOut();
               displayToastMessage(
                   "No record exists. Please create a new account", context);
@@ -154,6 +168,7 @@ class LoginScreen extends StatelessWidget {
       }
     else
     {
+      Navigator.pop(context);
       displayToastMessage("Error occured, can not be signed in!", context);
       //error occured - display error
     }
