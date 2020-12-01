@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:udi_rider/AllWidgets/Divider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:udi_rider/Assistants/assistantMethods.dart';
+import 'package:udi_rider/DataHandler/appData.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -212,7 +214,11 @@ class _MainScreenState extends State<MainScreen>
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Add your home address"),
+                          Text(
+                            Provider.of<AppData>(context).pickupLocation != null
+                                ? Provider.of<AppData>(context).pickupLocation.placeName
+                                : "Add your home address"    //checking whether pickupLocation has been saved or not
+                          ),
                           SizedBox(height: 4.0),
                           Text("Your residential address", style: TextStyle(color: Colors.black54, fontSize: 12.0),),
                         ],
