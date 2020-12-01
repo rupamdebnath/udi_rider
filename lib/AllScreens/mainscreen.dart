@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:udi_rider/AllWidgets/Divider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:udi_rider/Assistants/assistantMethods.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -31,6 +32,9 @@ class _MainScreenState extends State<MainScreen>
 
     CameraPosition cameraPosition = new CameraPosition(target: latLogPosition, zoom: 14);
     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    String address = await AssistantMethods.searchCoordinateAddress(position);   //usage of the method from AssistantMethods Class
+    print("This is your address :" + address);
   }
 
 
