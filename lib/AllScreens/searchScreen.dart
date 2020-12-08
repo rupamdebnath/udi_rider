@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:udi_rider/Assistants/requestAssistant.dart';
 import 'package:udi_rider/DataHandler/appData.dart';
+import 'package:udi_rider/mapConfig.dart';
 
 
 
@@ -105,6 +107,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Padding(
                             padding: EdgeInsets.all(3.0),
                             child: TextField(
+                              onChanged: (value)
+                              {
+                                findPlace(value);  //calling the function to predict place Name and show response in terminal
+                              },
                               controller: dropOffController,
                               decoration: InputDecoration(
                                 hintText: "DropOff location",
@@ -114,7 +120,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 isDense: true,
                                 contentPadding: EdgeInsets.only(left: 11.0, top: 8.0, bottom: 8.0),
                               ),
-
                             ),
                           ),
                         ),
@@ -130,4 +135,21 @@ class _SearchScreenState extends State<SearchScreen> {
 
     );
   }
+
+  void findPlace(String placeName) async
+  {
+    if(placeName.length > 1){
+      String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:in"; //using google place api to fetch the place prediction name, and country code for India so that only country relevant places are shown
+
+      var res = await RequestAssistant.getRequest(autoCompleteUrl);
+
+      if (res == "failed")
+        {
+          return;
+        }
+      print("Places Prediction Responses using the google place api :::: ");
+      print(res);
+    } // function to predict the place name and show the response in terminal, need to show in a list view to user later on
+  }
 }
+
