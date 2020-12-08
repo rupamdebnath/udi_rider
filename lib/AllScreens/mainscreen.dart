@@ -7,6 +7,7 @@ import 'package:udi_rider/AllWidgets/Divider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:udi_rider/Assistants/assistantMethods.dart';
 import 'package:udi_rider/DataHandler/appData.dart';
+import 'package:udi_rider/AllScreens/searchScreen.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainScreen";
@@ -178,30 +179,36 @@ class _MainScreenState extends State<MainScreen>
               child: Column(
                 children: [
                   SizedBox(height: 6.0),
-                  Text("Nomoskar, ", style: TextStyle(fontSize: 12.0),),
+                  Text("Nomoskar, Joy Hind", style: TextStyle(fontSize: 12.0),),
                   Text("Where do you want to go?", style: TextStyle(fontSize: 20.0, fontFamily: "Brand-Bold"),),
                   SizedBox(height: 20.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black54,
-                          blurRadius: 6.0,
-                          spreadRadius: 0.5,
-                          offset: Offset(0.7, 0.7),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search, color: Colors.blueAccent),
-                          SizedBox(width: 10.0),
-                          Text("Search for drop off location"),
+                  GestureDetector(
+                    onTap: ()
+                    {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen()));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 6.0,
+                            spreadRadius: 0.5,
+                            offset: Offset(0.7, 0.7),
+                          ),
                         ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search, color: Colors.blueAccent),
+                            SizedBox(width: 10.0),
+                            Text("Search for drop off location"),
+                          ],
+                        ),
                       ),
                     ),
                   ),

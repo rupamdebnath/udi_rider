@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Udi Rider',
           theme: ThemeData(
-            fontFamily: "Brand Bold",
+                              // removing the default theme of fontfamily fontFamily: "Brand Bold",
             primarySwatch: Colors.blue,
           ),
           initialRoute: LoginScreen.idScreen,
