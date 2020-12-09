@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:udi_rider/AllWidgets/Divider.dart';
+import 'package:udi_rider/AllWidgets/progressDialog.dart';
 import 'package:udi_rider/Assistants/requestAssistant.dart';
 import 'package:udi_rider/DataHandler/appData.dart';
+import 'package:udi_rider/Models/address.dart';
 import 'package:udi_rider/Models/placePredictions.dart';
 import 'package:udi_rider/mapConfig.dart';
 
@@ -201,31 +203,72 @@ class PredictionTile extends StatelessWidget
   PredictionTile({Key key, this.placePredictions}) : super(key: key);
     @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children:
-        [
-          SizedBox(width: 10.0,),
-          Row(
-            children: [
-              Icon(Icons.add_location),
-              SizedBox(width: 14.0,),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:
-                  [
-                    Text(placePredictions.main_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0),),
-                    SizedBox(height: 20.0,),
-                    Text(placePredictions.secondary_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.0, color: Colors.grey)),
-                  ],
+    return FlatButton(
+      padding: EdgeInsets.all(0.0),
+      onPressed: ()
+      {
+        getPlaceAddressDetails(placePredictions.place_id, context);
+      },
+          //making the predictions list clickable
+      child: Container(
+        child: Column(
+          children:
+          [
+            SizedBox(width: 10.0,),
+            Row(
+              children: [
+                Icon(Icons.add_location),
+                SizedBox(width: 14.0,),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                    [
+                      Text(placePredictions.main_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0),),
+                      SizedBox(height: 20.0,),
+                      Text(placePredictions.secondary_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.0, color: Colors.grey)),
+                    ],
+                  ),
                 ),
-              ),
-            ], //children
-          ),
-          SizedBox(width: 10.0,),
-        ],//children
+              ], //children
+            ),
+            SizedBox(width: 10.0,),
+          ],//children
+        ),
       ),
     );
   }
+  void getPlaceAddressDetails(String placeId,context) async
+  {
+    showDialog
+      (
+        context: context,
+        builder: (BuildContext context) => ProgressDialog(message: "Setting the drop off point, please wait...",)
+      );
+    //displaying pop up dialog to the user while the values are being updated
+
+    String placeDetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
+
+    var res = await RequestAssistant.getRequest(placeDetailsUrl);
+    Navigator.pop(context); //closing the popup dialog once the clicked location address is fetched
+
+
+    if (res == "failed")
+      {
+        return;
+      }
+    if (res["status"] == "OK")
+      {
+        Address address = Address();
+        address.placeName = res["result"]["name"];
+        address.placeId = placeId;
+        address.latitude = res["result"]["geometry"]["location"]["lat"];
+        address.latitude = res["result"]["geometry"]["location"]["lng"];    //google places api fetching the names should be exactly what is mentioned in developers site
+        
+        Provider.of<AppData>(context, listen: false).updateDropOffLocationAddress(address);
+        print("Drop Location :::: ");
+        print(address.placeName);   //just printing in terminal for testing
+      }
+  }
+  //function to get the place details
 }
