@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:udi_rider/AllWidgets/Divider.dart';
 import 'package:udi_rider/Assistants/requestAssistant.dart';
 import 'package:udi_rider/DataHandler/appData.dart';
+import 'package:udi_rider/Models/placePredictions.dart';
 import 'package:udi_rider/mapConfig.dart';
 
 
@@ -14,6 +17,7 @@ class  SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController pickUpController = TextEditingController();
   TextEditingController dropOffController = TextEditingController();
+  List<PlacePredictions> placePredictionList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
     String placeAddress = Provider.of<AppData>(context).pickupLocation.placeName ?? "";
     pickUpController.text = placeAddress;
     return Scaffold(
+      resizeToAvoidBottomPadding: false,    //otherwise was getting error "Bottom overflowed by 99 pixels"
       body: Column(
         children: [
           Container(
@@ -126,11 +131,34 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ],
                   ),
-                ],
-            ),
-            ),
+                ], //children
+             ),
           ),
-        ],
+        ),
+
+          //tile for predictions using Ternary operator to show the List if the length of the entered string id greater than 0 else show null container
+
+          (placePredictionList.length > 0 )
+              ? Padding
+                (
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: ListView.separated
+                      (
+                        padding : EdgeInsets.all(0.0),
+                        itemBuilder: (context, index)
+                        {
+                          return PredictionTile(placePredictions: placePredictionList[index],);
+                        },
+                        separatorBuilder: (BuildContext context, int index) => DividerWidget(),
+                        itemCount: placePredictionList.length,
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                      ),
+
+                )
+              : Container(),
+
+        ], //children
       ),
 
     );
@@ -138,7 +166,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void findPlace(String placeName) async
   {
-    if(placeName.length > 1){
+    if(placeName.length > 1)
+    {
       String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:in"; //using google place api to fetch the place prediction name, and country code for India so that only country relevant places are shown
 
       var res = await RequestAssistant.getRequest(autoCompleteUrl);
@@ -147,9 +176,56 @@ class _SearchScreenState extends State<SearchScreen> {
         {
           return;
         }
-      print("Places Prediction Responses using the google place api :::: ");
+
+      if (res["status"] == "OK")
+      {
+        var predictions = res["predictions"]; //Json values being retrieved from AutoComplete Place
+        var placeList = (predictions as List)
+            .map((e) => PlacePredictions.fromJson(e))
+            .toList(); //convert the Json values as a List using placePredictions.dart model class
+        setState(() {
+          placePredictionList = placeList;
+        });
+      }
+      print("Places Prediction Responses using the google place api :::: ");  //Print statements that print the response in terminal, not required when List view is created for user to see
       print(res);
     } // function to predict the place name and show the response in terminal, need to show in a list view to user later on
   }
 }
 
+//Predictions Class here
+class PredictionTile extends StatelessWidget
+{
+  final PlacePredictions placePredictions;
+
+  PredictionTile({Key key, this.placePredictions}) : super(key: key);
+    @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children:
+        [
+          SizedBox(width: 10.0,),
+          Row(
+            children: [
+              Icon(Icons.add_location),
+              SizedBox(width: 14.0,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                  [
+                    Text(placePredictions.main_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0),),
+                    SizedBox(height: 20.0,),
+                    Text(placePredictions.secondary_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.0, color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ], //children
+          ),
+          SizedBox(width: 10.0,),
+        ],//children
+      ),
+    );
+  }
+}
