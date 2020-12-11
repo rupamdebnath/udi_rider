@@ -30,6 +30,8 @@ class _MainScreenState extends State<MainScreen>
 
   List<LatLng> polylineDetails = [];          //poly Line Coordinates of Latitue and Longitude type
   Set<Polyline> polyLines = {};               //poly lines drawing of the type Polyline from flutter_polyline_points package
+  Set<Marker> _markers = {};                   //markers for both points on the map
+  Set<Circle> _circles = {};
 
   void locatePosition() async
   {
@@ -117,6 +119,8 @@ class _MainScreenState extends State<MainScreen>
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
               polylines: polyLines,
+              markers: _markers,
+              circles: _circles,
               onMapCreated: (GoogleMapController controller)
               {
                   _controllerMap.complete(controller);
@@ -345,5 +349,46 @@ class _MainScreenState extends State<MainScreen>
       }
 
     newGoogleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 70));
+
+    Marker startPointMarker = Marker(
+          markerId: MarkerId("pickup"),
+          position: pickupLatLng,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+          infoWindow: InfoWindow(title: pickUp.placeName, snippet: "My Location"),
+    ); //Starting point
+    Marker endPointMarker = Marker(
+      markerId: MarkerId("dropoff"),
+      position: dropOffLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      infoWindow: InfoWindow(title: dropOff.placeName, snippet: "Drop Off Point"),
+    ); //Ending point
+
+    setState(() {
+      _markers.add(startPointMarker);
+      _markers.add(endPointMarker);
+    });
+
+    Circle startPointCircle = Circle(
+      circleId: CircleId("pickup"),
+      strokeColor: Colors.green,
+      strokeWidth: 3,
+      radius: 12,
+      center: pickupLatLng,
+      fillColor: Colors.yellow,
+    );  //starting point
+
+    Circle endPointCircle = Circle(
+      circleId: CircleId("dropoff"),
+      strokeColor: Colors.purple,
+      strokeWidth: 3,
+      radius: 12,
+      center: dropOffLatLng,
+      fillColor: Colors.redAccent,
+    );  //Ending point
+
+    setState(() {
+      _circles.add(startPointCircle);
+      _circles.add(endPointCircle);
+    });
   }
 }
