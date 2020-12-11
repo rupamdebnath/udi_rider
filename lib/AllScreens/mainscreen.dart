@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:udi_rider/AllWidgets/Divider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:udi_rider/AllWidgets/progressDialog.dart';
 import 'package:udi_rider/Assistants/assistantMethods.dart';
 import 'package:udi_rider/DataHandler/appData.dart';
 import 'package:udi_rider/AllScreens/searchScreen.dart';
@@ -183,9 +184,14 @@ class _MainScreenState extends State<MainScreen>
                   Text("Where do you want to go?", style: TextStyle(fontSize: 20.0, fontFamily: "Brand-Bold"),),
                   SizedBox(height: 20.0),
                   GestureDetector(
-                    onTap: ()
+                    onTap: () async
                     {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen()));
+                      var response = await Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen()));    //routing to Search Screen
+
+                      if (response == "directionFound")
+                        {
+                          await getDirections();
+                        }
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -258,5 +264,26 @@ class _MainScreenState extends State<MainScreen>
         ],
       ),
     );
+  }
+
+  Future<void> getDirections() async
+  {
+    var pickUp = Provider.of<AppData>(context, listen: false).pickupLocation;
+    var dropOff = Provider.of<AppData>(context, listen: false).dropoffLocation;
+
+    var pickupLatLng = LatLng(pickUp.latitude, pickUp.longitude);
+    var dropOffLatLng = LatLng(dropOff.latitude, dropOff.longitude);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => ProgressDialog(message: "Setting the drop off point..."),
+    );
+
+    var _directionDetails = await AssistantMethods.getDirectionDetails(pickupLatLng, dropOffLatLng);
+
+    Navigator.pop(context);           //close progressdialog box once response is fetched
+
+    print(_directionDetails.encodedPoints);
   }
 }
