@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -26,6 +27,9 @@ class _MainScreenState extends State<MainScreen>
   Position currentPosition;
   var geoLocator = Geolocator();
   double bottomPaddingOfMap = 0;
+
+  List<LatLng> polylineDetails = [];          //poly Line Coordinates of Latitue and Longitude type
+  Set<Polyline> polyLines = {};               //poly lines drawing of the type Polyline from flutter_polyline_points package
 
   void locatePosition() async
   {
@@ -112,6 +116,7 @@ class _MainScreenState extends State<MainScreen>
               myLocationEnabled: true,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: true,
+              polylines: polyLines,
               onMapCreated: (GoogleMapController controller)
               {
                   _controllerMap.complete(controller);
@@ -284,6 +289,34 @@ class _MainScreenState extends State<MainScreen>
 
     Navigator.pop(context);           //close progressdialog box once response is fetched
 
-    print(_directionDetails.encodedPoints);
+    //print(_directionDetails.encodedPoints);
+
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<PointLatLng> resultantCoordinates = polylinePoints.decodePolyline(_directionDetails.encodedPoints);
+
+    polylineDetails.clear();                  //so that multiple polylineDetails instances are not created
+    if (resultantCoordinates.isNotEmpty)
+      {
+        resultantCoordinates.forEach((PointLatLng points)
+        {
+          polylineDetails.add(LatLng(points.latitude, points.longitude));
+        });
+      }
+
+    polyLines.clear();          //so that multiple polyLines instances are not created
+    setState(() {
+      Polyline polyline = Polyline(
+          polylineId: PolylineId("polyId"),
+          color: Color.fromARGB(255, 95, 150, 230),
+          points: polylineDetails,
+          jointType: JointType.round,
+          width: 4,
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+          geodesic: true
+      );
+
+      polyLines.add(polyline);
+    });
   }
 }
