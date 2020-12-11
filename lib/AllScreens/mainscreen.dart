@@ -318,5 +318,32 @@ class _MainScreenState extends State<MainScreen>
 
       polyLines.add(polyline);
     });
+
+    //fit the polylines in the map
+
+    LatLngBounds bounds;
+
+    if(pickupLatLng.latitude > dropOffLatLng.latitude && pickupLatLng.longitude > dropOffLatLng.longitude)
+    {
+        bounds = LatLngBounds(southwest: dropOffLatLng, northeast: pickupLatLng);
+    }
+    else if(pickupLatLng.longitude > dropOffLatLng.longitude)
+    {
+      bounds = LatLngBounds(
+          southwest: LatLng(pickupLatLng.latitude, dropOffLatLng.longitude),
+        northeast: LatLng(dropOffLatLng.latitude, pickupLatLng.longitude)
+      );
+    }
+
+    else if(pickupLatLng.latitude > dropOffLatLng.latitude)
+      {
+        bounds = LatLngBounds(southwest: LatLng(dropOffLatLng.latitude, pickupLatLng.longitude), northeast: LatLng(pickupLatLng.latitude, dropOffLatLng.longitude));
+      }
+    else
+      {
+        bounds = LatLngBounds(southwest: pickupLatLng, northeast: dropOffLatLng);
+      }
+
+    newGoogleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 70));
   }
 }
