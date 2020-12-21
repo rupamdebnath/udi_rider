@@ -1,6 +1,6 @@
 # udi_rider
 
-A new application for udibaba drivers
+A new application for udibaba drivers -- the three wheeler vehicles who can order for rides and drivers can accept the orders or decline. As such, this will include another app for drivers, but this app will only be used by the riders
 
 ## Getting Started
 
